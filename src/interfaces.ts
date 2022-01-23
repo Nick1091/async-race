@@ -30,8 +30,14 @@ export type GetWinners = {
   time: number;
 };
 export interface IGetWinners {
-  items: GetWinners[];
+  items: IIDWinner[];
   count: number;
+}
+export interface IIDWinner {
+  id: number;
+  wins: number;
+  time: number;
+  car: ICar;
 }
 export type GetWinnersParams = {
   page: number;
@@ -49,20 +55,39 @@ export interface IStorageObj {
   cars: ICar[];
   carsCount: number;
   winnersPage: number;
-  winners: GetWinners[];
+  winners: IIDWinner[];
   winnersCount: number;
   animation: IObj;
-  view: 'garage';
-  sortBy: null;
-  sortOrder: null;
+  sortBy: null | string;
+  sortOrder: null | string;
   selectedCarID: number | null;
 }
-interface IObj {
-  [key: string]: string;
+export interface IObjNumber {
+  [id: string]: number;
+}
+export interface IObj {
+  [id: string]: IObjNumber;
 }
 export interface ICarEnj {
   id: number;
   name: string;
   color: string;
   isEngineStarted: boolean;
+}
+export interface IWinners {
+  success: boolean;
+  id: number;
+  time: number;
+}
+export interface IWinner {
+  name?: string;
+  color?: string;
+  id?: number;
+  time: number;
+}
+export interface INewWinner {
+  name?: string;
+  color?: string;
+  id: number;
+  time: number;
 }

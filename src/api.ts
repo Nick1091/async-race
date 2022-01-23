@@ -4,10 +4,10 @@ import {
   IUpdateCar,
   GetWinnersParams,
   GetWinners,
-  SaveWinner,
   IStartStopParams,
   IGetWinners,
   ICreateCar,
+  INewWinner,
 } from './interfaces';
 const baseUrl = 'http://localhost:3000';
 const garage = `${baseUrl}/garage`;
@@ -60,15 +60,15 @@ export const startCar = async (id: number): Promise<IStartStopParams> =>
 export const stopCar = async (id: number): Promise<IStartStopParams> =>
   (await fetch(`${engine}?id=${id}&status=stopped`, { method: 'PATCH' })).json();
 
-export const driveCar = async (id: number): Promise<boolean> => {
+//: Promise<boolean>
+export const driveCar = async (id: number) => {
   const res = await fetch(`${engine}?id=${id}&status=drive`, { method: 'PATCH' }).catch();
-  return res.status !== 200 ? { success: false } : { ...(await res.json()) };
+  return res.status === 200 ? { ...(await res.json()) } : { success: false };
 };
 
 const getSortOrder = (sort: string | null, order: string | null) =>
   sort && order ? `&_sort=${sort}&_order=${order}` : '';
 
-//help
 export const getWinners = async ({ page, limit = 10, sort, order }: GetWinnersParams): Promise<IGetWinners> => {
   const res = await fetch(`${winners}?_page=${page}&_limit=${limit}&${getSortOrder(sort, order)}`);
   const items = await res.json();
@@ -104,24 +104,22 @@ export const updateWinner = async (id: number, body: GetWinners) =>
     })
   ).json();
 
-//save image;
+export const getWinnerStatus = async (id: number) => (await fetch(`${winners}/${id}`)).status;
 
-// export const getWinnerStatus = async (id: number) => (await fetch(`${winners}/${id}`)).status;
-
-// export const saveWinners = async ({ id, time }: SaveWinner) => {
-//   const winnerStatus = await getWinnerStatus(id);
-//   if (winnerStatus === 404) {
-//     await createWinner({
-//       id,
-//       wins: 1,
-//       time,
-//     });
-//   } else {
-//     const winner: GetWinners = await getWinner(id);
-//     await updateWinner(id, {
-//       id,
-//       wins: winner.wins + 1,
-//       time: time < winner.time ? time : winner.time,
-//     });
-//   }
-// };
+export const saveWinners = async ({ id, time }: INewWinner) => {
+  const winnerStatus = await getWinnerStatus(id);
+  if (winnerStatus === 404) {
+    await createWinner({
+      id,
+      wins: 1,
+      time,
+    });
+  } else {
+    const winner: GetWinners = await getWinner(id);
+    await updateWinner(id, {
+      id,
+      wins: winner.wins + 1,
+      time: time < winner.time ? time : winner.time,
+    });
+  }
+};

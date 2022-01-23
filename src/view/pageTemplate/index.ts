@@ -1,5 +1,4 @@
 import { updateStateGarage, updateStateWinners } from '../../controlPages/index';
-import { store } from '../../store';
 
 export async function listen() {
   const garageMenuButton = document.querySelector('.garage-menu-button');
@@ -15,13 +14,13 @@ export async function listen() {
 export const render = async (template: string) => {
   const html = `
 <div class="menu">
-    <button class="button garage-menu-button primary" id="garage-menu">To garage</button>
-    <button class="button winners-menu-button primary" id="winners-menu">To winners</button>
+    <button class="button garage-menu-button primary" id="garage-menu">TO GARAGE</button>
+    <button class="button winners-menu-button primary" id="winners-menu">TO WINNERS</button>
   </div>
 ${template}  
   <div class="pagination">
-    <button class="button primary prev-button" id="prev">Prev</button>
-    <button class="button primary next-button" id="next">next</button>
+    <button class="button primary prev-button" id="prev">PREV</button>
+    <button class="button primary next-button" id="next">NEXT</button>
 </div>`;
   const root = document.createElement('div');
   root.innerHTML = html;

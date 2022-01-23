@@ -12,12 +12,8 @@ export const renderWinners = async () => `
       <th>Number</th>
       <th>Car</th>
       <th>Name</th>
-      <th class="table-button table-wins ${
-        store.sortBy === 'wins' ? store.sortOrder : ''
-      }" id = "sort-by-wins">Wins</th>
-      <th class="table-button table-time ${
-        store.sortBy === 'time' ? store.sortOrder : ''
-      }" id = "sort-by-time">Best time (sec)</th>
+      <th class="table-button table-wins" id = "sort-by-wins">Wins</th>
+      <th class="table-button table-time" id = "sort-by-time">Best time (sec)</th>
     </thead>
     <tbody>
       ${store.winners
@@ -25,8 +21,8 @@ export const renderWinners = async () => `
           (winner, index) => `
         <tr>
           <td>${index + 1}</td>
-          <td>${getCarImage(store.cars[index].color)}</td>
-          <td>${store.cars[index].name}</td>
+          <td>${getCarImage(winner.car.color)}</td>
+          <td>${winner.car.name}</td>
           <td>${winner.wins}</td>
           <td>${winner.time}</td>
         </tr>

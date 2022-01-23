@@ -1,5 +1,4 @@
-import { IStorageObj, ICars, GetWinnersParams, IGetWinners } from './interfaces';
-import { getCars, getWinners } from './api';
+import { IStorageObj } from './interfaces';
 
 export const store: IStorageObj = {
   carsPage: 1,
@@ -9,7 +8,6 @@ export const store: IStorageObj = {
   winners: [],
   winnersCount: 0,
   animation: {},
-  view: 'garage',
   sortBy: null,
   sortOrder: null,
   selectedCarID: null,

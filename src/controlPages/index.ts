@@ -1,8 +1,8 @@
-import { ICar, IUpdateCar, GetWinnersParams, GetWinners, SaveWinner, ICarEnj } from '../interfaces';
-import { getCars, getCar, getWinners } from '../api';
+import { getCars, getWinners } from '../api';
 import { store } from '../store';
 import { renderGaragePage } from '../view/garageView/index';
 import { renderWinnersPage } from '../view/winnersView/index';
+import { listenSortCars } from './winnersController/index';
 
 export const updateStateGarage = async () => {
   const { items, count } = await getCars(store.carsPage);
@@ -42,6 +42,7 @@ export const updateStateWinners = async () => {
   store.winners = items;
   store.winnersCount = count;
   await renderWinnersPage();
+  await listenSortCars();
   const prevButton = document.querySelector('.prev-button');
   const nextButton = document.querySelector('.next-button');
   if (!(prevButton instanceof HTMLButtonElement)) {

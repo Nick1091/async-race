@@ -9,8 +9,8 @@ export const getCarContainer = ({ id, name, color }: ICar) => `
   <div class="road">
     <div class="launch-pad">
       <div class="control-panel">
-        <button class="icon start-engine-button" id="start-engine-car-${id}">A</button>
-        <button class="icon stop-engine-button" id="stop-engine-car-${id}">B</button>
+        <button class="icon start-engine-button" id="start-engine-car-${id}">Start</button>
+        <button class="icon stop-engine-button" id="stop-engine-car-${id}" disabled>Stop</button>
       </div>
       <div class="car" id="car-${id}">
         ${getCarImage(color)}

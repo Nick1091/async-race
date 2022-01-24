@@ -8,7 +8,8 @@ import {
   IGetWinners,
   ICreateCar,
   INewWinner,
-} from './interfaces';
+  CarsEngine,
+} from '../../types/types';
 const baseUrl = 'http://localhost:3000';
 const garage = `${baseUrl}/garage`;
 const winners = `${baseUrl}/winners`;
@@ -60,8 +61,7 @@ export const startCar = async (id: number): Promise<IStartStopParams> =>
 export const stopCar = async (id: number): Promise<IStartStopParams> =>
   (await fetch(`${engine}?id=${id}&status=stopped`, { method: 'PATCH' })).json();
 
-//: Promise<boolean>
-export const driveCar = async (id: number) => {
+export const driveCar = async (id: number): Promise<CarsEngine> => {
   const res = await fetch(`${engine}?id=${id}&status=drive`, { method: 'PATCH' }).catch();
   return res.status === 200 ? { ...(await res.json()) } : { success: false };
 };

@@ -1,4 +1,4 @@
-import { ICreateCar } from '../../../interfaces';
+import { ICreateCar } from '../../../../types/types';
 const models = [
   'Roadster',
   'S',

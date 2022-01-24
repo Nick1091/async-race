@@ -21,7 +21,7 @@ export interface IStartStopParams {
 }
 
 export type CarsEngine = {
-  success: true;
+  success: boolean;
 };
 
 export type GetWinners = {
@@ -61,18 +61,13 @@ export interface IStorageObj {
   sortBy: null | string;
   sortOrder: null | string;
   selectedCarID: number | null;
+  view: string;
 }
 export interface IObjNumber {
   [id: string]: number;
 }
 export interface IObj {
   [id: string]: IObjNumber;
-}
-export interface ICarEnj {
-  id: number;
-  name: string;
-  color: string;
-  isEngineStarted: boolean;
 }
 export interface IWinners {
   success: boolean;

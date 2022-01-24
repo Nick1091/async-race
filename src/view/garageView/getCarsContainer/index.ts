@@ -1,5 +1,5 @@
-import { getCarImage } from '../../pageTemplate/car/index';
-import { ICar } from '../../../interfaces';
+import { getCarImage } from '../../../components';
+import { ICar } from '../../../types/types';
 export const getCarContainer = ({ id, name, color }: ICar) => `
   <div class="general-buttons">
     <button class="select-button" id = 'select-car-${id}'>Select</button>
@@ -7,7 +7,7 @@ export const getCarContainer = ({ id, name, color }: ICar) => `
     <span class="car-name">${name}</span>
   </div>
   <div class="road">
-    <div class="launch-pad">
+    <div class="road-car-area">
       <div class="control-panel">
         <button class="icon start-engine-button" id="start-engine-car-${id}">Start</button>
         <button class="icon stop-engine-button" id="stop-engine-car-${id}" disabled>Stop</button>
@@ -18,4 +18,5 @@ export const getCarContainer = ({ id, name, color }: ICar) => `
     </div>
     <div class="flag" id="flag-${id}">&#127937;</div>
   </div>
+  <div id="message-broke-down-engine-${id}" class = "message" display="none"></div>
 `;

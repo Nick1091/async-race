@@ -1,14 +1,17 @@
-import { store } from '../../store';
-import { updateStateWinners } from '../../controlPages/index';
+import { getWinners } from '../../view/winnersView';
+import { apdWinners, store } from '../../components';
 
-const setSortCars = async () => {
+const setSortCars = () => {
   store.sortOrder = store.sortOrder === 'asc' ? 'desc' : 'asc';
-  await updateStateWinners();
 };
 
 export const listenSortCars = async () => {
   const winsButton = document.querySelector('.table-wins');
   const timeButton = document.querySelector('.table-time');
+  const winners = document.querySelector('.winners-view');
+  if (!(winners instanceof HTMLElement)) {
+    throw new Error('Error');
+  }
   if (!(winsButton instanceof HTMLElement)) {
     throw new Error('Error');
   }
@@ -17,10 +20,16 @@ export const listenSortCars = async () => {
   }
   winsButton.onclick = async () => {
     store.sortBy = 'wins';
-    await setSortCars();
+    setSortCars();
+    await apdWinners();
+    winners.innerHTML = getWinners();
+    await listenSortCars();
   };
   timeButton.onclick = async () => {
     store.sortBy = 'time';
-    await setSortCars();
+    setSortCars();
+    await apdWinners();
+    winners.innerHTML = getWinners();
+    await listenSortCars();
   };
 };

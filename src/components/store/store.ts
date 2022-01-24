@@ -1,4 +1,4 @@
-import { IStorageObj } from './interfaces';
+import { IStorageObj } from '../../types/types';
 
 export const store: IStorageObj = {
   carsPage: 1,
@@ -11,4 +11,5 @@ export const store: IStorageObj = {
   sortBy: null,
   sortOrder: null,
   selectedCarID: null,
+  view: 'garagePage',
 };

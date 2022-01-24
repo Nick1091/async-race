@@ -1,25 +1,8 @@
-import { startCar, driveCar, stopCar } from '../../../api';
-import { store } from '../../../store';
-import { getDistance } from './getDistance/index';
-import { IObjNumber, IWinner, IWinners, INewWinner } from '../../../interfaces';
+import { startCar, driveCar, stopCar, store } from '../../../components';
+import { IWinners } from '../../../types/types';
+import { animation, getDistance } from '../components';
 
-export function animation(id: number, car: HTMLElement, distance: number, animationTime: number) {
-  const state: IObjNumber = {};
-  const startTime = new Date().getTime();
-  async function getInterval() {
-    const currTime = new Date().getTime();
-    const passedDistance = Math.round((currTime - startTime) * (distance / animationTime));
-
-    car.style.transform = `translateX(${Math.min(passedDistance, distance)}px)`;
-    if (passedDistance < distance) {
-      state.id = window.requestAnimationFrame(getInterval);
-    }
-  }
-  state.id = window.requestAnimationFrame(getInterval);
-  return state;
-}
-
-export const startDriving = async (id: number) => {
+export const startDriving = async (id: number): Promise<IWinners> => {
   const startButton = document.getElementById(`start-engine-car-${id}`);
   if (!(startButton instanceof HTMLButtonElement)) {
     throw new Error(" Error: startButton isn't a button ");
@@ -40,11 +23,24 @@ export const startDriving = async (id: number) => {
   if (!(flag instanceof HTMLElement)) {
     throw new Error(" Error: it isn't a button ");
   }
+  const brokeEngineMassage = document.getElementById(`message-broke-down-engine-${id}`);
+  if (!(brokeEngineMassage instanceof HTMLElement)) {
+    throw new Error(" Error: it isn't a button ");
+  }
   const CurrentDistance = Math.floor(getDistance(car, flag) + 80);
-  store.animation[id] = animation(id, car, CurrentDistance, time);
+  store.animation[id] = animation(car, CurrentDistance, time);
   const { success } = await driveCar(id).then((data) => {
-    if (data.status !== 200) {
+    const brokeEngine = document.getElementById(`car-road-${id}`);
+    if (!(brokeEngine instanceof HTMLElement)) {
+      throw new Error(" Error: it isn't a button ");
+    }
+    if (data.success === false) {
       window.cancelAnimationFrame(store.animation[id].id);
+      brokeEngine.style.backgroundColor = '#d403033d';
+      brokeEngineMassage.style.display = 'block';
+      brokeEngineMassage.innerHTML = `${
+        brokeEngine.querySelector('.car-name')?.textContent
+      } is out of race because the engine was broken down`;
     }
     return data;
   });
@@ -60,8 +56,18 @@ export const stopDriving = async (id: number) => {
   if (!(stopButton instanceof HTMLButtonElement)) {
     throw new Error(" Error: startButton isn't a button ");
   }
+  const brokeEngine = document.getElementById(`car-road-${id}`);
+  if (!(brokeEngine instanceof HTMLElement)) {
+    throw new Error(" Error: it isn't a button ");
+  }
+  const brokeEngineMassage = document.getElementById(`message-broke-down-engine-${id}`);
+  if (!(brokeEngineMassage instanceof HTMLElement)) {
+    throw new Error(" Error: it isn't a button ");
+  }
   stopButton.disabled = true;
   await stopCar(id);
+  brokeEngine.style.backgroundColor = 'transparent';
+  brokeEngineMassage.style.display = 'none';
   startButton.disabled = false;
   const car = document.getElementById(`car-${id}`);
   if (!(car instanceof HTMLElement)) {
@@ -69,24 +75,4 @@ export const stopDriving = async (id: number) => {
   }
   car.style.transform = 'translateX(0)';
   if (store.animation[id] !== undefined) window.cancelAnimationFrame(store.animation[id].id);
-};
-
-export const getWinnerRace = async (promises: Promise<IWinners>[], ids: number[]): Promise<IWinner> => {
-  const { success, id, time } = await Promise.race(promises);
-  if (!success) {
-    const failedIndex = ids.findIndex((i) => i === id);
-    promises.splice(failedIndex, 1);
-    ids.splice(failedIndex, 1);
-    return getWinnerRace(promises, ids);
-  }
-  return { ...store.cars.find((car) => car.id === id), time: +(time / 1000).toFixed(2) };
-};
-
-export const race = async (prom: (id: number) => Promise<IWinners>) => {
-  const promises = store.cars.map(({ id }) => prom(id));
-  const winner = (await getWinnerRace(
-    promises,
-    store.cars.map((car) => car.id)
-  )) as INewWinner;
-  return winner;
 };

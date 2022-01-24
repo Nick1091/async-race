@@ -1,10 +1,30 @@
-import { store } from '../../store';
-import { createCar, updateCar, getCar, deleteCar, deleteWinner, getWinner, saveWinners } from '../../api';
-import { updateStateGarage } from '../index';
-import { generateRandomCars } from './generateCars/index';
-import { startDriving, stopDriving, race } from './startStopEngine/index';
+import {
+  createCar,
+  updateCar,
+  getCar,
+  deleteCar,
+  deleteWinner,
+  getWinner,
+  saveWinners,
+  store,
+  apdCars,
+  apdWinners,
+} from '../../components';
+import { startDriving, stopDriving } from './animationStartStopRace';
+import { getCarsView } from '../../view/garageView/index';
+import { getWinners } from '../../view/winnersView';
+import { listenSortCars } from '../listenSortCars/listenSortCars';
+import { race, generateRandomCars } from './components';
 
-export async function listen() {
+export async function listenPage() {
+  const garage = document.getElementById('garage');
+  if (!(garage instanceof HTMLElement)) {
+    throw new Error('Error');
+  }
+  const winners = document.querySelector('.winners-view');
+  if (!(winners instanceof HTMLElement)) {
+    throw new Error('Error');
+  }
   const updateName = document.getElementById('update-name');
   if (!(updateName instanceof HTMLInputElement)) {
     throw new Error('Error');
@@ -28,10 +48,15 @@ export async function listen() {
     const car = Object.fromEntries(myUpdateCar);
     if (store.selectedCarID !== null) {
       await updateCar(car, store.selectedCarID);
-      await updateStateGarage();
+      await apdCars();
+      await apdWinners();
+      winners.innerHTML = getWinners();
+      garage.innerHTML = getCarsView();
     }
     updateName.disabled = true;
+    updateName.value = '';
     updateColor.disabled = true;
+    updateColor.value = '#ffffff';
     updateButton.disabled = true;
     store.selectedCarID = null;
   });
@@ -40,12 +65,11 @@ export async function listen() {
     if (!(e.target instanceof HTMLFormElement)) {
       throw new Error('Error');
     }
-    console.log(e.target);
-    const targetName = e.target.querySelector('input');
+    const targetName = e.target.querySelector('.input');
     if (!(targetName instanceof HTMLInputElement)) {
       throw new Error('Error');
     }
-    const targetColor = e.target.querySelectorAll('input')[1];
+    const targetColor = e.target.querySelector('.color');
     if (!(targetColor instanceof HTMLInputElement)) {
       throw new Error('Error');
     }
@@ -54,7 +78,10 @@ export async function listen() {
     myCreateCar.set(targetColor.name, targetColor.value);
     const car = Object.fromEntries(myCreateCar);
     await createCar(car);
-    await updateStateGarage();
+    await apdCars();
+    garage.innerHTML = getCarsView();
+    targetName.value = '';
+    targetColor.value = '#ffffff';
   });
   const generateButton = document.querySelector('.generator-button');
   if (!(generateButton instanceof HTMLButtonElement)) {
@@ -64,7 +91,8 @@ export async function listen() {
     generateButton.disabled = true;
     const cars = generateRandomCars();
     await Promise.all(cars.map(async (car) => createCar(car)));
-    await updateStateGarage();
+    await apdCars();
+    garage.innerHTML = getCarsView();
     generateButton.disabled = false;
   });
 
@@ -87,6 +115,9 @@ export async function listen() {
     winnerMessage.innerHTML = `${winner.name} went first in ${winner.time} seconds!`;
     winnerMessage.classList.toggle('visible');
     await saveWinners(winner);
+    await apdWinners();
+    winners.innerHTML = getWinners();
+    await listenSortCars();
   });
   resetButton.addEventListener('click', async () => {
     resetButton.disabled = true;
@@ -115,8 +146,11 @@ export async function listen() {
         await deleteCar(id);
         if (await getWinner(id)) {
           await deleteWinner(id);
+          await apdWinners();
+          winners.innerHTML = getWinners();
         }
-        await updateStateGarage();
+        await apdCars();
+        garage.innerHTML = getCarsView();
       }
       if (e.target.classList.contains('start-engine-button')) {
         const id = +e.target.id.split('start-engine-car-')[1];

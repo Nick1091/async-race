@@ -15,6 +15,7 @@ import { getCarsView } from '../../view/garageView/index';
 import { getWinners } from '../../view/winnersView';
 import { listenSortCars } from '../listenSortCars/listenSortCars';
 import { race, generateRandomCars } from './components';
+import { buttonDisable } from '../../view/pageTemplate';
 
 export async function listenPage() {
   const garage = document.getElementById('garage');
@@ -94,6 +95,7 @@ export async function listenPage() {
     await apdCars();
     garage.innerHTML = getCarsView();
     generateButton.disabled = false;
+    buttonDisable();
   });
 
   const raceButton = document.querySelector('.race-button');
@@ -107,6 +109,7 @@ export async function listenPage() {
   raceButton.addEventListener('click', async () => {
     raceButton.disabled = true;
     const winner = await race(startDriving);
+    if (winner === null) return (resetButton.disabled = false);
     const winnerMessage = document.getElementById('message-winner');
     if (!(winnerMessage instanceof HTMLElement)) {
       throw new Error("it's not a button");
@@ -121,13 +124,21 @@ export async function listenPage() {
   });
   resetButton.addEventListener('click', async () => {
     resetButton.disabled = true;
-    store.cars.map(({ id }) => stopDriving(id));
+    store.cars.map(({ id }) => {
+      stopDriving(id);
+    });
+    function enableButton() {
+      if (!(raceButton instanceof HTMLButtonElement)) {
+        throw new Error("it's not a button");
+      }
+      raceButton.disabled = false;
+    }
+    setTimeout(enableButton, 2000);
     const winnerMessage = document.getElementById('message-winner');
     if (!(winnerMessage instanceof HTMLElement)) {
       throw new Error("it's not a button");
     }
     winnerMessage.classList.toggle('visible');
-    raceButton.disabled = false;
   });
 
   document.getElementById('garage')?.addEventListener('click', async (e) => {

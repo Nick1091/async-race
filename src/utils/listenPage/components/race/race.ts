@@ -1,12 +1,13 @@
 import { store } from '../../../../components';
 import { IWinners, IWinner, INewWinner } from '../../../../types/types';
 
-const getWinnerRace = async (promises: Promise<IWinners>[], ids: number[]): Promise<IWinner> => {
+const getWinnerRace = async (promises: Promise<IWinners>[], ids: number[]): Promise<IWinner | null> => {
   const { success, id, time } = await Promise.race(promises);
   if (!success) {
     const failedIndex = ids.findIndex((i) => i === id);
     promises.splice(failedIndex, 1);
     ids.splice(failedIndex, 1);
+    if (promises.length < 1) return null;
     return getWinnerRace(promises, ids);
   }
   return { ...store.cars.find((car) => car.id === id), time: +(time / 1000).toFixed(2) };
